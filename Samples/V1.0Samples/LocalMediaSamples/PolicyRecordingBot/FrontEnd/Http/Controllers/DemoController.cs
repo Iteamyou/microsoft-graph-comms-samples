@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="DemoController.cs" company="Microsoft Corporation">
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
@@ -12,6 +12,7 @@ namespace Sample.PolicyRecordingBot.FrontEnd.Http
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Net;
     using System.Net.Http;
     using System.Text;
@@ -120,6 +121,26 @@ namespace Sample.PolicyRecordingBot.FrontEnd.Http
             var response = this.Request.CreateResponse(HttpStatusCode.OK);
             response.Content = new StringContent(json, Encoding.UTF8, "application/json");
             return response;
+        }
+
+        [HttpGet]
+        [Route("Record")]
+        public HttpResponseMessage OnGetRecord()
+        {
+            using (var st = new StreamReader("output.txt"))
+            {
+                var sb = new StringBuilder();
+                string line;
+                while ((line = st.ReadLine()) != null )
+                {
+                    sb.Append(line+"<br>");
+                }
+
+                var content = $@"<html><head><meta http-equiv=""refresh"" content=""3""></head><body>{sb.ToString()}</body></html>";
+                var response = this.Request.CreateResponse(HttpStatusCode.OK);
+                response.Content = new StringContent(content, Encoding.UTF8, "text/html");
+                return response;
+            }
         }
 
         /// <summary>
